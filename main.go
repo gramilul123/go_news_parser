@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 
@@ -12,7 +11,7 @@ import (
 func main() {
 	var err error
 
-	if len(os.Args) > 1 && len(rss.Streams) > 0 {
+	if len(os.Args) > 1 && len(rss.RssStreams) > 0 {
 		err = rss.ParseAndRun(os.Args[1:])
 	} else {
 
@@ -20,13 +19,11 @@ func main() {
 			err = errors.New("Arguments not found")
 		}
 
-		if len(rss.Streams) == 0 {
+		if len(rss.RssStreams) == 0 {
 			err = errors.New("Rss streams not defined in packeges")
 		}
 
 	}
-
-	fmt.Println(rss.Streams)
 
 	if err != nil {
 		log.Fatal(err)
