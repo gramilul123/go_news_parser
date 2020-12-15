@@ -2,13 +2,14 @@ package rss
 
 import (
 	"errors"
+	"fmt"
 )
 
 type RssStream interface {
 	Run()
-	GetData()
-	ParseDate()
-	Save()
+	//GetData()
+	//ParseDate()
+	//Save()
 }
 
 type RunRssStream struct {
@@ -23,7 +24,11 @@ func ParseAndRun(args []string) error {
 	var err error
 	runRssStreams := ParseLineArguments(args)
 
-	if len(runRssStreams) == 0 {
+	if len(runRssStreams) > 0 {
+
+		err = RunParse(runRssStreams)
+	} else {
+
 		err = errors.New("Couldn't find a command to run the parser")
 	}
 
@@ -35,7 +40,9 @@ func ParseLineArguments(args []string) []RunRssStream {
 	runRssStreams := []RunRssStream{}
 
 	for key, arg := range args {
+
 		for _, stream := range RssStreams {
+
 			if arg == stream {
 				rss := stream
 
@@ -50,4 +57,24 @@ func ParseLineArguments(args []string) []RunRssStream {
 	}
 
 	return runRssStreams
+}
+
+func RunParse(runRssStreams []RunRssStream) error {
+	var err error
+	var rssStream RssStream
+
+	for _, runRssStream := range runRssStreams {
+		switch runRssStream.rss {
+		case "lenta":
+			rssStream = &Lenta{}
+		case "meduza":
+			rssStream = &Meduza{}
+		default:
+			err = errors.New(fmt.Sprintf("Couldn't match the %s Rss with the Rss Stream Interface", runRssStream.rss))
+		}
+
+		rssStream.Run()
+	}
+
+	return err
 }

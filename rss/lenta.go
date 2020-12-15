@@ -1,5 +1,7 @@
 package rss
 
+import "fmt"
+
 type Lenta struct {
 	Rss         string
 	Rule        string
@@ -9,4 +11,8 @@ type Lenta struct {
 
 func init() {
 	RssStreams = append(RssStreams, "lenta")
+}
+
+func (rss *Lenta) Run() {
+	fmt.Println("lenta start")
 }
