@@ -1,6 +1,8 @@
 package rss
 
 import (
+	"go_news_parser/news"
+	"log"
 	"strings"
 	"testing"
 )
@@ -35,5 +37,32 @@ func TestParseLineArguments(t *testing.T) {
 		for _, errorLine := range errorLines {
 			t.Errorf("Error line: %d (%v)", errorLines, lineArguments[errorLine])
 		}
+	}
+}
+
+func TestLentaRss(t *testing.T) {
+	var rssStreamObject RssStream
+	var newsList []news.News
+	var err error
+	var hasError bool
+
+	rules := []string{"news", "top7", "last24", "articles"}
+
+	rssStreamObject = &Lenta{}
+
+	for _, rule := range rules {
+		rssStreamObject.Initialization(rule)
+		newsList, err = rssStreamObject.GetNewsList()
+
+		log.Printf("%s - %d\n", rule, len(newsList))
+
+		if err != nil {
+			hasError = true
+			break
+		}
+	}
+
+	if hasError {
+		t.Error(err)
 	}
 }
