@@ -54,7 +54,34 @@ func TestLentaRss(t *testing.T) {
 		rssStreamObject.Initialization(rule)
 		newsList, err = rssStreamObject.GetNewsList()
 
-		log.Printf("%s - %d\n", rule, len(newsList))
+		log.Printf("Lenta %s - %d\n", rule, len(newsList))
+
+		if err != nil {
+			hasError = true
+			break
+		}
+	}
+
+	if hasError {
+		t.Error(err)
+	}
+}
+
+func TestMeduzaRss(t *testing.T) {
+	var rssStreamObject RssStream
+	var newsList []news.News
+	var err error
+	var hasError bool
+
+	rules := []string{"1", "r", "-4", "0"}
+
+	rssStreamObject = &Meduza{}
+
+	for _, rule := range rules {
+		rssStreamObject.Initialization(rule)
+		newsList, err = rssStreamObject.GetNewsList()
+
+		log.Printf("Meduza %s - %d\n", rule, len(newsList))
 
 		if err != nil {
 			hasError = true
