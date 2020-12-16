@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"log"
+	"time"
 
 	"go_news_parser/news"
 	"go_news_parser/restclient"
@@ -59,6 +60,7 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 	var newsList []news.News
 	var response []byte
 	var err error
+	var date time.Time
 
 	response, err = restclient.Request(fmt.Sprintf("http://lenta.ru/rss/%s", rss.Rule))
 	if err != nil {
@@ -71,7 +73,16 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 	if err == nil {
 		if len(catalog.Items.Items) > 0 {
 			for _, item := range catalog.Items.Items {
-				newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "lenta", item.Date})
+				date, err = time.Parse(time.RFC1123Z, item.Date)
+				if err == nil {
+					newsList = append(newsList, news.News{
+						Link:        item.Link,
+						Title:       item.Title,
+						Description: item.Description,
+						Source:      "lenta",
+						DatePub:     date,
+					})
+				}
 			}
 		} else {
 			log.Println("Lenta rss is empty")

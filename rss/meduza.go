@@ -7,6 +7,7 @@ import (
 	"go_news_parser/restclient"
 	"log"
 	"strconv"
+	"time"
 )
 
 type MeduzaCatalog struct {
@@ -18,7 +19,7 @@ type MeduzaDocument struct {
 	Link        string `json:"url"`
 	Title       string `json:"title"`
 	Description string `json:"second_title"`
-	Date        int    `json:"published_at"`
+	Date        int64  `json:"published_at"`
 }
 
 // The Meduza struct contain functions for getting news list
@@ -62,7 +63,13 @@ func (rss *Meduza) GetNewsList() ([]news.News, error) {
 	if err == nil {
 		if catalog.Count != 0 {
 			for _, item := range catalog.Documents {
-				newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "meduza", fmt.Sprint(item.Date)})
+				newsList = append(newsList, news.News{
+					Link:        item.Link,
+					Title:       item.Title,
+					Description: item.Description,
+					Source:      "meduza",
+					DatePub:     time.Unix(item.Date, 0),
+				})
 			}
 		} else {
 			log.Println("Meduza rss is empty")
