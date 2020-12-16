@@ -66,14 +66,16 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 		return nil, err
 	}
 
-	xml.Unmarshal(response, &catalog)
+	err = xml.Unmarshal(response, &catalog)
 
-	if len(catalog.Items.Items) > 0 {
-		for _, item := range catalog.Items.Items {
-			newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "lenta", item.Date})
+	if err == nil {
+		if len(catalog.Items.Items) > 0 {
+			for _, item := range catalog.Items.Items {
+				newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "lenta", item.Date})
+			}
+		} else {
+			log.Println("Lenta rss is empty")
 		}
-	} else {
-		log.Println("Lenta rss is empty")
 	}
 
 	return newsList, err
