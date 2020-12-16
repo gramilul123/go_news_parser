@@ -70,7 +70,7 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 
 	if len(catalog.Items.Items) > 0 {
 		for _, item := range catalog.Items.Items {
-			newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, item.Date})
+			newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "lenta", item.Date})
 		}
 	} else {
 		log.Println("Lenta rss is empty")

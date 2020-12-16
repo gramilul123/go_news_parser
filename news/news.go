@@ -5,5 +5,6 @@ type News struct {
 	Link        string
 	Title       string
 	Description string
+	Source      string
 	Date        string
 }
