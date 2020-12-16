@@ -2,31 +2,52 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"sync"
 
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	"go_news_parser/news"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/joho/godotenv"
 )
 
-//The DB struct contains a connect with postgres db or a error connection.
-type DB struct {
-	Connect *sqlx.DB
-	Error   error
-}
-
-var db *DB
+var db *gorm.DB
 var once sync.Once
 
-// GetDBConnect returns a db connection struct. If there was any error then a struct will have error.
-func GetDBConnect(host, user, password, dbname string) *DB {
+func init() {
+	dbConn := GetDB()
+	dbConn.Debug().AutoMigrate(&news.News{})
+}
 
+func CreateDbConnect(host, user, password, name string) *gorm.DB {
 	dbFunc := func() {
-		strConnect := fmt.Sprintf("host=%s sslmode=disable user=%s password=%s dbname=%s", host, user, password, dbname)
-		db = &DB{}
-		db.Connect, db.Error = sqlx.Connect("postgres", strConnect)
-	}
+		dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", host, user, name, password)
+		conn, err := gorm.Open("postgres", dbURI)
+		if err != nil {
+			log.Fatal(err)
+		}
 
+		db = conn
+	}
 	once.Do(dbFunc)
 
 	return db
+}
+
+func GetDB() *gorm.DB {
+	err := godotenv.Load("../config.env")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	name := os.Getenv("POSTGRES_DB")
+	host := os.Getenv("POSTGRES_HOST")
+
+	dbConn := CreateDbConnect(host, user, password, name)
+
+	return dbConn
 }

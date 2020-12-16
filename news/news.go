@@ -3,8 +3,8 @@ package news
 import "time"
 
 type News struct {
-	ID          int
-	Link        string
+	ID          int    `gorm:"primaryKey"`
+	Link        string `gorm:"primaryKey"`
 	Title       string
 	Description string
 	Source      string
