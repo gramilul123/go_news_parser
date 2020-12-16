@@ -62,7 +62,7 @@ func (rss *Meduza) GetNewsList() ([]news.News, error) {
 	if err == nil {
 		if catalog.Count != 0 {
 			for _, item := range catalog.Documents {
-				newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "Meduza", fmt.Sprint(item.Date)})
+				newsList = append(newsList, news.News{0, item.Link, item.Title, item.Description, "meduza", fmt.Sprint(item.Date)})
 			}
 		} else {
 			log.Println("Meduza rss is empty")
