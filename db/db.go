@@ -21,6 +21,7 @@ func init() {
 	dbConn.Debug().AutoMigrate(&news.News{})
 }
 
+// CreateDbConnect function creates DB connection
 func CreateDbConnect(host, user, password, name string) *gorm.DB {
 	dbFunc := func() {
 		dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", host, user, name, password)
@@ -36,6 +37,7 @@ func CreateDbConnect(host, user, password, name string) *gorm.DB {
 	return db
 }
 
+// GetDB function returns DB connection
 func GetDB() *gorm.DB {
 	err := godotenv.Load("../config.env")
 	if err != nil {
