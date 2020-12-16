@@ -8,9 +8,9 @@ import (
 
 	"go_news_parser/news"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
@@ -24,8 +24,8 @@ func init() {
 // CreateDbConnect function creates DB connection
 func CreateDbConnect(host, user, password, name string) *gorm.DB {
 	dbFunc := func() {
-		dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", host, user, name, password)
-		conn, err := gorm.Open("postgres", dbURI)
+		dsn := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", host, user, name, password)
+		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -39,7 +39,7 @@ func CreateDbConnect(host, user, password, name string) *gorm.DB {
 
 // GetDB function returns DB connection
 func GetDB() *gorm.DB {
-	err := godotenv.Load("../config.env")
+	err := godotenv.Load("config.env")
 	if err != nil {
 		log.Fatal(err)
 	}
