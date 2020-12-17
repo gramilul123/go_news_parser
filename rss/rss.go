@@ -116,6 +116,7 @@ func GetAndSaveNews(rssStreamObject RssStream, rss, rule string, wg *sync.WaitGr
 	log.Printf("Done %s %s\n", rss, rule)
 }
 
+// SaveNews function saves news into DB
 func SaveNews(news news.News) {
 	db.GetDB().Clauses(clause.OnConflict{DoNothing: true}).Create(&news)
 }
