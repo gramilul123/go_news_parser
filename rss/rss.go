@@ -6,6 +6,7 @@ import (
 	"go_news_parser/db"
 	"go_news_parser/news"
 	"log"
+	"sync"
 
 	"gorm.io/gorm/clause"
 )
@@ -66,6 +67,7 @@ func ParseLineArguments(args []string) []RunRssStream {
 func RunParse(runRssStreams []RunRssStream) error {
 	var err error
 	var rssStreamObject RssStream
+	var wg sync.WaitGroup
 
 	for _, runRssStream := range runRssStreams {
 		switch runRssStream.rss {
@@ -78,20 +80,30 @@ func RunParse(runRssStreams []RunRssStream) error {
 		}
 
 		if err == nil {
-			err = GetAndSaveNews(rssStreamObject, runRssStream.rss, runRssStream.rule)
+			wg.Add(1)
+
+			go GetAndSaveNews(rssStreamObject, runRssStream.rss, runRssStream.rule, &wg)
 		}
 
 		if err != nil {
 			break
 		}
-
 	}
+
+	wg.Wait()
 
 	return err
 }
 
 // GetAndSaveNews function manages rss processing
-func GetAndSaveNews(rssStreamObject RssStream, rss, rule string) error {
+func GetAndSaveNews(rssStreamObject RssStream, rss, rule string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	defer func() {
+		if rec := recover(); rec != nil {
+			log.Printf("Error: %s %s: %v\n", rss, rule, rec)
+		}
+	}()
+
 	var newsList []news.News
 	var err error
 
@@ -100,12 +112,10 @@ func GetAndSaveNews(rssStreamObject RssStream, rss, rule string) error {
 
 	if err != nil {
 
-		return err
+		panic(err)
 	}
 
 	Save(newsList, rss, rule)
-
-	return err
 }
 
 // Save function save news list to DB
