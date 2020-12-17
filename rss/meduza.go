@@ -34,6 +34,10 @@ func init() {
 // Initialization function checks injected a rule. If a rule is not defined, will be add default rule.
 func (rss *Meduza) Initialization(ruleArgument string) {
 
+	if ruleArgument == "" {
+		ruleArgument = "0"
+	}
+
 	rule, err := strconv.ParseUint(ruleArgument, 10, 32)
 
 	if err != nil {
