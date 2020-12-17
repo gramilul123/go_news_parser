@@ -84,3 +84,9 @@ func (rss *Meduza) GetNewsList() error {
 
 	return err
 }
+
+// GetRule function return parsing rule
+func (rss *Meduza) GetRule() string {
+
+	return fmt.Sprintf("%d", rss.Rule)
+}

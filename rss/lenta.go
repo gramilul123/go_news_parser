@@ -94,3 +94,9 @@ func (rss *Lenta) GetNewsList() error {
 
 	return err
 }
+
+// GetRule function return parsing rule
+func (rss *Lenta) GetRule() string {
+
+	return rss.Rule
+}

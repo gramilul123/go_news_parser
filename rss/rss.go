@@ -14,6 +14,7 @@ import (
 type RssStream interface {
 	Initialization(string)
 	GetNewsList() error
+	GetRule() string
 }
 
 type RunRssStream struct {
@@ -113,7 +114,7 @@ func GetAndSaveNews(rssStreamObject RssStream, rss, rule string, wg *sync.WaitGr
 		panic(err)
 	}
 
-	log.Printf("Done %s %s\n", rss, rule)
+	log.Printf("Done %s %s\n", rss, rssStreamObject.GetRule())
 }
 
 // SaveNews function saves news into DB
