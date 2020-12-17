@@ -7,6 +7,7 @@ import (
 	"go_news_parser/news"
 )
 
+// SearchNews function searches news in DB
 func SearchNews(q, source string) {
 	newsList := GetNews(q, source)
 
@@ -20,6 +21,7 @@ func SearchNews(q, source string) {
 	}
 }
 
+// GetNews function returns news list from DB
 func GetNews(q, source string) []news.News {
 	var newsList []news.News
 
