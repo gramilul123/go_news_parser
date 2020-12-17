@@ -64,7 +64,7 @@ func (rss *Meduza) GetNewsList() ([]news.News, error) {
 		if catalog.Count != 0 {
 			for _, item := range catalog.Documents {
 				newsList = append(newsList, news.News{
-					Link:        item.Link,
+					Link:        fmt.Sprintf("https://meduza.io/%s", item.Link),
 					Title:       item.Title,
 					Description: item.Description,
 					Source:      "meduza",
