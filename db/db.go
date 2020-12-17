@@ -18,7 +18,7 @@ var once sync.Once
 
 func init() {
 	dbConn := GetDB()
-	dbConn.Debug().AutoMigrate(&news.News{})
+	dbConn.AutoMigrate(&news.News{})
 }
 
 // CreateDbConnect function creates DB connection
