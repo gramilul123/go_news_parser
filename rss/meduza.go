@@ -51,34 +51,36 @@ func (rss *Meduza) Initialization(ruleArgument string) {
 }
 
 // GetNewsList function returns news list from Meduza rss stream
-func (rss *Meduza) GetNewsList() ([]news.News, error) {
+func (rss *Meduza) GetNewsList() error {
 	var catalog MeduzaCatalog
-	var newsList []news.News
 	var response []byte
 	var err error
 
 	response, err = restclient.Request(fmt.Sprintf("http://meduza.io/api/v3/search?chrono=news&locale=ru&per_page=24&page=%d", rss.Rule))
 	if err != nil {
 
-		return nil, err
+		return err
 	}
 
 	err = json.Unmarshal(response, &catalog)
 	if err == nil {
 		if catalog.Count != 0 {
 			for _, item := range catalog.Documents {
-				newsList = append(newsList, news.News{
+
+				newsItem := news.News{
 					Link:        fmt.Sprintf("https://meduza.io/%s", item.Link),
 					Title:       item.Title,
 					Description: item.Description,
 					Source:      "meduza",
 					DatePub:     time.Unix(item.Date, 0),
-				})
+				}
+
+				SaveNews(newsItem)
 			}
 		} else {
 			log.Println("Meduza rss is empty")
 		}
 	}
 
-	return newsList, err
+	return err
 }

@@ -13,7 +13,7 @@ import (
 
 type RssStream interface {
 	Initialization(string)
-	GetNewsList() ([]news.News, error)
+	GetNewsList() error
 }
 
 type RunRssStream struct {
@@ -97,6 +97,8 @@ func RunParse(runRssStreams []RunRssStream) error {
 
 // GetAndSaveNews function manages rss processing
 func GetAndSaveNews(rssStreamObject RssStream, rss, rule string, wg *sync.WaitGroup) {
+	var err error
+
 	defer wg.Done()
 	defer func() {
 		if rec := recover(); rec != nil {
@@ -104,27 +106,16 @@ func GetAndSaveNews(rssStreamObject RssStream, rss, rule string, wg *sync.WaitGr
 		}
 	}()
 
-	var newsList []news.News
-	var err error
-
 	rssStreamObject.Initialization(rule)
-	newsList, err = rssStreamObject.GetNewsList()
-
+	err = rssStreamObject.GetNewsList()
 	if err != nil {
 
 		panic(err)
 	}
 
-	Save(newsList, rss, rule)
+	log.Printf("Done %s %s\n", rss, rule)
 }
 
-// Save function save news list to DB
-func Save(newsList []news.News, rss, rule string) {
-
-	for _, news := range newsList {
-
-		db.GetDB().Clauses(clause.OnConflict{DoNothing: true}).Create(&news)
-	}
-
-	log.Printf("Done %s %s\n", rss, rule)
+func SaveNews(news news.News) {
+	db.GetDB().Clauses(clause.OnConflict{DoNothing: true}).Create(&news)
 }

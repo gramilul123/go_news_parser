@@ -54,10 +54,8 @@ func (rss *Lenta) Initialization(ruleArgument string) {
 }
 
 // GetNewsList function returns news list from Lenta rss stream
-func (rss *Lenta) GetNewsList() ([]news.News, error) {
-
+func (rss *Lenta) GetNewsList() error {
 	var catalog LentaCatalog
-	var newsList []news.News
 	var response []byte
 	var err error
 	var date time.Time
@@ -65,7 +63,7 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 	response, err = restclient.Request(fmt.Sprintf("http://lenta.ru/rss/%s", rss.Rule))
 	if err != nil {
 
-		return nil, err
+		return err
 	}
 
 	err = xml.Unmarshal(response, &catalog)
@@ -73,15 +71,20 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 	if err == nil {
 		if len(catalog.Items.Items) > 0 {
 			for _, item := range catalog.Items.Items {
+
 				date, err = time.Parse(time.RFC1123Z, item.Date)
+
 				if err == nil {
-					newsList = append(newsList, news.News{
+
+					newsItem := news.News{
 						Link:        item.Link,
 						Title:       item.Title,
 						Description: item.Description,
 						Source:      "lenta",
 						DatePub:     date,
-					})
+					}
+
+					SaveNews(newsItem)
 				}
 			}
 		} else {
@@ -89,5 +92,5 @@ func (rss *Lenta) GetNewsList() ([]news.News, error) {
 		}
 	}
 
-	return newsList, err
+	return err
 }
